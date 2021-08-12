@@ -4,110 +4,238 @@ clicks: 1
 altCover: true 
 ---
 
-# Vuetiful Theme
+# Nuxt js 
 
-A Vue-inspired theme for my talks about Vue
-
----
-layout: section
----
-
-# This is a section
-
----
-layout: quote
-author: Linus Borg (2021)
----
-
-# Big quotes make your talk look fancy
+The intuitive and SEO friendly framework
 
 ---
 layout: big-points
-title: Need to make a few big points?
+title: Why nuxt?
 titleRow: true
 ---
 
-- Increased font size... <Badge type="warn">Test</Badge>
-- ...and centered content
-- help stressing a few points
-
---- 
-
-# Code
-
-Use code snippets and get the highlighting directly!
-
-```html
-<template>
-  <h1>Hello World"</h1>
-  <div class="message">{{ message }}</div>
-</template>
-<script>
-  export default {
-    data:() => ({
-      message: 'Great to be here!',
-    })
-  }
-</script>
-<style scoped>
-  .message {
-    color: red;
-  }
-</style>
-```
+- Modular therefore faster development
+- Performant
+- Easy!
 
 ---
-layout: video
-video: https://player.vimeo.com/video/455611549
+layout: big-points
+title: Rendering....
+titleRow: true
 ---
 
-# You can include Video!
+- SSR
+- Static
+
+<!--
+dsfsdfsdfsdfsdfsdfsdffffffsdfsfsdfsdfsfsdf
+-->
 
 ---
-layout: sfc
-example: Test
+layout: quote
 ---
 
-# Firing up a Vue SFC playground
+# SSR it is...
 
 ---
-title: Default Slide can show flexible grids
+layout: big-points
+title: Feature Overview
+titleRow: true
+---
+
+- Very configurable
+- Folder Structure
+- Routing
+- Async Data
+- State management - Vuex
+- Deployment
+
+---
+title: Configuration
 titleRow: true
 cols: '2-1'
 ---
 
-```html
-<template>
-  <h1>Hello World"</h1>
-  <div class="message">{{ message }}</div>
-</template>
-<script>
-  export default {
-    data:() => ({
-      message: 'Great to be here!',
-    })
-  }
-</script>
-<style scoped>
-  .message {
-    color: red;
-  }
-</style>
+```js
+/*
+   ** Build configuration
+   ** See https://nuxtjs.org/api/configuration-build/
+   */
+  build: {
+    plugins: [
+      new webpack.ProvidePlugin({
+        // global modules
+        $: 'jquery',
+        _: 'lodash',
+      }),
+    ],
+    vendor: [],
+    transpile: ['@nuxtjs/auth-next', 'tokenByClient'],
+    babel: {
+      compact: true,
+      plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-private-methods'],
+    },
+  },
 ```
 
 ::right::
 
 ## Features
 
-* Flexible column width via windicss
-* Here, more weight on the left
-* Leaves room for short notes
+- Server side frameworks
+- UI frameworks
+- Testing frameworks
+- etc ...
+
+---
+layout: big-points
+title: Folder Structure
+titleRow: true
+---
+
+- assets
+- components
+- layouts
+- middleware
+- pages
+- plugins
+- static
+- store
+
+---
+title: Routing
+titleRow: true
+---
+
+```html
+pages/
+--| _slug/
+-----| comments.vue
+-----| index.vue
+--| users/
+-----| _id.vue
+--| index.vue
+```
+
+---
+titleRow: false
+---
+
+```js
+router: {
+  routes: [
+    {
+      name: 'index',
+      path: '/',
+      component: 'pages/index.vue'
+    },
+    {
+      name: 'users-id',
+      path: '/users/:id?',
+      component: 'pages/users/_id.vue'
+    },
+    {
+      name: 'slug',
+      path: '/:slug',
+      component: 'pages/_slug/index.vue'
+    },
+    {
+      name: 'slug-comments',
+      path: '/:slug/comments',
+      component: 'pages/_slug/comments.vue'
+    }
+  ]
+}
+```
+
+---
+title: Async Data
+titleRow: true
+---
+
+```html
+<template>
+</template>
+<script>
+  export default {
+    async asyncData(context) {
+      if (context.store.state.associations.forUser === null) {
+        await context.store.dispatch('associations/fetchForUser', {
+          id: context.$auth.user.id,
+          token: context.$auth.strategy.token.get(),
+        });
+      }
+    },
+    mounted() {
+    },
+    data() {
+      return {}
+    }
+  }
+</script>
+```
+
+---
+title: State management - Vuex
+titleRow: true
+---
+
+```js
+import axios from 'axios';
+
+export const state = () => ({
+  list: []
+})
+
+export const actions = {
+  async fetchCountries(context, token) {
+    const res = await axios.get(`/country`)
+    // Todo - Need some error handling here
+    context.commit(`setCountries`, res.data.data)
+    return res.data.data
+  }
+};
+
+export const mutations = {
+  setCountries(state, data) {
+    state.list = data
+  }
+};
+```
+
+---
+layout: big-points
+title: Nuxt Auth
+titleRow: true
+---
+
+```js
+<script>
+export default {
+  data() {
+    return {
+      login: {
+        username: '',
+        password: ''
+      }
+    }
+  },
+  methods: {
+    async userLogin() {
+      try {
+        let response = await this.$auth.loginWith('local', { data: this.login })
+        console.log(response)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+}
+</script>
+```
 
 ---
 layout: outro
-twitter: '@Linus_Borg'
-website: 'https://www.linusb.org'
-repository: 'github.com/linusborg/slidev-theme-vuetiful'
 ---
 
 Thank you for listening!
